@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#05080d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VOLT Ride">
+<title>VOLT — E-bike Ride</title>
+<style>
+:root{color-scheme:dark;--bg:#05080d;--panel:rgba(18,27,40,.64);--line:rgba(172,211,255,.14);--blue:#50c8ff;--blue2:#167cff;--muted:#8d9caf;--white:#f4f8ff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:radial-gradient(ellipse at 50% 5%,#102238 0%,#080e17 38%,var(--bg) 74%);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+body{padding:env(safe-area-inset-top) 16px calc(20px + env(safe-area-inset-bottom));}
+.app{max-width:520px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;gap:17px}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 3px 2px}
+.brand{font-size:14px;letter-spacing:.23em;font-weight:800}.brand span{color:var(--blue)}
+.live{font-size:11px;color:#9aaabd;letter-spacing:.12em;display:flex;align-items:center;gap:7px}
+.dot{height:7px;width:7px;border-radius:50%;background:#536174;box-shadow:0 0 0 4px #53617422}.dot.on{background:#49e6ae;box-shadow:0 0 12px #49e6ae}
+.glass{background:linear-gradient(140deg,rgba(255,255,255,.075),rgba(255,255,255,.018) 45%),var(--panel);border:1px solid var(--line);box-shadow:0 16px 50px #0005,inset 0 1px 0 #ffffff12;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-radius:25px}
+.speed-card{padding:23px 16px 20px;position:relative;overflow:hidden;text-align:center}
+.speed-card:before{content:"";position:absolute;inset:-80px 10% auto;height:200px;background:radial-gradient(ellipse,#168dff20,transparent 70%);pointer-events:none}
+.eyebrow{font-size:10px;letter-spacing:.22em;color:#94a7bc;text-transform:uppercase}
+.gauge{width:min(75vw,310px);height:min(75vw,310px);max-width:310px;max-height:310px;margin:4px auto 0;position:relative;display:grid;place-items:center}
+.gauge svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-135deg);overflow:visible}
+.track{fill:none;stroke:#ffffff0b;stroke-width:7;stroke-linecap:round}
+.progress{fill:none;stroke:url(#grad);stroke-width:7;stroke-linecap:round;stroke-dasharray:565.5;stroke-dashoffset:565.5;filter:drop-shadow(0 0 8px #24aaff99);transition:stroke-dashoffset .3s ease}
+.speed-number{font-size:clamp(78px,23vw,112px);line-height:.95;letter-spacing:-.075em;font-weight:650;font-variant-numeric:tabular-nums;text-shadow:0 0 35px #42baff18}
+.unit{font-size:13px;color:#a9c5dc;letter-spacing:.2em;margin-top:10px}
+.gps{margin-top:4px;color:var(--muted);font-size:11px;display:flex;justify-content:center;align-items:center;gap:7px}
+.gps:before{content:"";width:5px;height:5px;border-radius:50%;background:#6c7e92}
+.gps.good{color:#74e6bc}.gps.good:before{background:#49e6ae;box-shadow:0 0 9px #49e6ae}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.stat{padding:16px 17px;min-height:100px;display:flex;flex-direction:column;justify-content:space-between;gap:12px}
+.stat-top{display:flex;align-items:center;gap:8px;color:#a4b4c7;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.stat-icon{width:25px;height:25px;border-radius:8px;display:grid;place-items:center;background:#48bfff13;color:var(--blue);font-size:14px}
+.value{font-size:27px;letter-spacing:-.045em;font-weight:600;font-variant-numeric:tabular-nums}.value small{font-size:12px;letter-spacing:0;color:#a0b0c2;font-weight:500;margin-left:4px}
+.ride-time{padding:17px 19px;display:flex;align-items:center;justify-content:space-between}
+.time-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#9eafc2}.time-value{font-size:25px;font-weight:600;letter-spacing:.03em;font-variant-numeric:tabular-nums;margin-top:4px}
+.time-symbol{font-size:22px;color:var(--blue);width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:#3abaff12;border:1px solid #68ceff17}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+button{font:inherit;cursor:pointer;border:0;min-height:59px;border-radius:18px;color:var(--white);font-size:15px;font-weight:650;transition:transform .15s,opacity .15s}
+button:active{transform:scale(.98)}
+.primary{background:linear-gradient(115deg,#68d7ff,#1788ff 80%);color:#03111e;box-shadow:0 8px 28px #168dff38}
+.secondary{background:rgba(255,255,255,.055);border:1px solid var(--line)}
+button:disabled{opacity:.35;cursor:not-allowed}
+.footnote{text-align:center;color:#627387;font-size:10px;line-height:1.5;padding:0 10px}
+.history{padding:19px;display:none}.history.show{display:block}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#b4c7d9;font-weight:700}
+.clear{font-size:11px;min-height:32px;padding:0 10px;border-radius:10px;color:#a4b8cb}
+.history-empty{font-size:13px;color:#718398;padding:10px 0 2px}
+.ride-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-top:1px solid #ffffff0c;gap:10px}
+.ride-date{font-size:13px;font-weight:600}.ride-sub{font-size:11px;color:#8193a8;margin-top:5px}
+.ride-right{text-align:right;white-space:nowrap}.ride-distance{font-size:16px;font-weight:650}.ride-speed{font-size:11px;color:#8ca0b5;margin-top:4px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#15283aee;border:1px solid #62cfff40;padding:12px 16px;border-radius:14px;font-size:12px;box-shadow:0 10px 35px #0008;transition:.25s;max-width:90vw;text-align:center;z-index:5}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:430px){body{padding-left:22px;padding-right:22px}.speed-card{padding-top:27px}.app{gap:19px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="app">
+<header><div class="brand">VOLT<span> / </span>RIDE</div><div class="live"><i class="dot" id="liveDot"></i><span id="liveText">GPS STANDBY</span></div></header>
+<section class="glass speed-card" aria-label="Current speed">
+<div class="eyebrow">Current speed</div>
+<div class="gauge">
+<svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#64e3ff"/><stop offset="100%" stop-color="#167bff"/></linearGradient></defs><circle class="track" cx="100" cy="100" r="90" stroke-dasharray="565.5" stroke-dashoffset="141.4"/><circle class="progress" id="progress" cx="100" cy="100" r="90"/></svg>
+<div><div class="speed-number" id="speed">0</div><div class="unit">MILES / HOUR</div></div>
+</div>
+<div class="gps" id="gpsStatus" role="status">Waiting for GPS permission</div>
+</section>
+<section class="stats">
+<div class="glass stat"><div class="stat-top"><span class="stat-icon">↗</span>Top speed</div><div class="value"><span id="topSpeed">0.0</span><small>mph</small></div></div>
+<div class="glass stat"><div class="stat-top"><span class="stat-icon">⌁</span>Average</div><div class="value"><span id="avgSpeed">0.0</span><small>mph</small></div></div>
+<div class="glass stat"><div class="stat-top"><span class="stat-icon">⌖</span>Distance</div><div class="value"><span id="distance">0.00</span><small>mi</small></div></div>
+<div class="glass stat"><div class="stat-top"><span class="stat-icon">◷</span>Ride time</div><div class="value"><span id="elapsed">00:00</span></div></div>
+</section>
+<section class="glass ride-time"><div><div class="time-label">Ride status</div><div class="time-value" id="rideState">Ready to roll</div></div><div class="time-symbol">ϟ</div></section>
+<div class="actions"><button class="primary" id="startBtn">▶ &nbsp; Start ride</button><button class="secondary" id="stopBtn" disabled>■ &nbsp; Finish ride</button></div>
+<section class="glass history" id="historyPanel"><div class="section-head"><div class="section-title">Ride history</div><button class="secondary clear" id="clearHistory">Clear</button></div><div id="historyList"></div></section>
+<div class="footnote">GPS speed may fluctuate with signal quality. Mount your phone securely and never interact with the screen while moving.</div>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script>
+(function(){
+ const $=id=>document.getElementById(id);
+ const MPS_TO_MPH=2.2369362921;
+ let watchId=null, running=false, startedAt=0, elapsedBefore=0, timer=null;
+ let lastPoint=null, distanceM=0, topMph=0, speedSamples=[], currentMph=0, toastTimer=null;
+ let history=[];
+ try{history=JSON.parse(localStorage.getItem('voltRideHistory')||'[]');if(!Array.isArray(history))history=[];}catch(e){history=[];}
+ const fmtTime=ms=>{let s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return h>0?String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'):String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')};
+ const elapsed=()=>elapsedBefore+(running?Date.now()-startedAt:0);
+ function notify(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),3200)}
+ function updateUI(){
+  $('speed').textContent=currentMph<1?currentMph.toFixed(1):currentMph.toFixed(1).replace(/\.0$/,'');
+  $('topSpeed').textContent=topMph.toFixed(1);
+  const avg=elapsed()>0?(distanceM/1609.344)/(elapsed()/3600000):0;
+  $('avgSpeed').textContent=(Number.isFinite(avg)?avg:0).toFixed(1);
+  $('distance').textContent=(distanceM/1609.344).toFixed(2);
+  $('elapsed').textContent=fmtTime(elapsed());
+  const fraction=Math.max(0,Math.min(currentMph/35,1));
+  $('progress').style.strokeDashoffset=565.5*(1-fraction);
+ }
+ function setGps(ok,msg){$('gpsStatus').textContent=msg;$('gpsStatus').classList.toggle('good',ok);$('liveDot').classList.toggle('on',ok);$('liveText').textContent=ok?'GPS ACTIVE':(running?'GPS SEARCHING':'GPS STANDBY')}
+ function haversine(a,b){const R=6371000,toRad=x=>x*Math.PI/180;let dLat=toRad(b.lat-a.lat),dLon=toRad(b.lon-a.lon);let q=Math.sin(dLat/2)**2+Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLon/2)**2;return 2*R*Math.atan2(Math.sqrt(q),Math.sqrt(1-q))}
+ function onPosition(pos){
+  const c=pos.coords, now=pos.timestamp||Date.now();
+  if(!running)return;
+  if(c.accuracy!=null&&c.accuracy>65){setGps(false,'Weak GPS accuracy — seeking clearer signal');return}
+  let mph=(c.speed!=null&&c.speed>=0)?c.speed*MPS_TO_MPH:0;
+  if(c.speed==null&&lastPoint){let secs=(now-lastPoint.time)/1000;let d=haversine(lastPoint,{lat:c.latitude,lon:c.longitude});if(secs>0&&d/secs<25)mph=(d/secs)*MPS_TO_MPH;}
+  // Ignore implausible GPS spikes rather than displaying a misleading speed.
+  if(mph>70){setGps(false,'GPS spike ignored — recalibrating');return}
+  if(lastPoint){let d=haversine(lastPoint,{lat:c.latitude,lon:c.longitude});let secs=(now-lastPoint.time)/1000;
+   if(d<120&&secs>0){if(d>1.8)distanceM+=d;}
+  }
+  lastPoint={lat:c.latitude,lon:c.longitude,time:now};
+  currentMph=mph;
+  if(mph>topMph)topMph=mph;
+  speedSamples.push({mph,time:now});if(speedSamples.length>300)speedSamples.shift();
+  setGps(true,c.accuracy!=null?'GPS lock · ±'+Math.round(c.accuracy)+' m':'GPS lock acquired');
+  updateUI();
+ }
+ function onError(err){
+  let msg=err.code===1?'Location permission denied — allow access in iPhone Settings.':err.code===2?'GPS signal unavailable — move to an open area.':'GPS timed out — searching again.';
+  setGps(false,msg);notify(msg);
+ }
+ function start(){
+  if(!navigator.geolocation){notify('This browser does not support GPS location.');return}
+  if(!window.isSecureContext && location.hostname!=='localhost' && location.protocol!=='file:'){notify('GPS requires HTTPS. Open this app using a secure website.');return}
+  running=true;startedAt=Date.now();lastPoint=null;currentMph=0;
+  $('startBtn').disabled=true;$('stopBtn').disabled=false;$('rideState').textContent='Ride in progress';
+  setGps(false,'Requesting GPS permission…');updateUI();
+  watchId=navigator.geolocation.watchPosition(onPosition,onError,{enableHighAccuracy:true,maximumAge:1000,timeout:15000});
+  timer=setInterval(updateUI,500);
+ }
+ function finish(){
+  if(!running)return;
+  running=false;elapsedBefore=elapsedBefore+Date.now()-startedAt;
+  if(watchId!==null)navigator.geolocation.clearWatch(watchId);watchId=null;clearInterval(timer);timer=null;currentMph=0;lastPoint=null;
+  $('startBtn').disabled=false;$('stopBtn').disabled=true;$('rideState').textContent='Ride complete';
+  setGps(false,'GPS paused');updateUI();
+  const duration=elapsedBefore;
+  if(distanceM>0.01||duration>10000){
+   const item={date:new Date().toISOString(),distance:distanceM/1609.344,top:topMph,avg:duration>0?(distanceM/1609.344)/(duration/3600000):0,duration};
+   history.unshift(item);history=history.slice(0,30);saveHistory();renderHistory();notify('Ride saved to your history.');
+  }else notify('Ride ended. Not enough data to save a trip.');
+  elapsedBefore=0;distanceM=0;topMph=0;speedSamples=[];updateUI();
+ }
+ function saveHistory(){try{localStorage.setItem('voltRideHistory',JSON.stringify(history))}catch(e){notify('Unable to save ride history on this device.')}}
+ function renderHistory(){
+  const panel=$('historyPanel'),list=$('historyList');panel.classList.add('show');
+  if(!history.length){list.innerHTML='<div class="history-empty">Your completed rides will appear here.</div>';return}
+  list.innerHTML=history.map((r,i)=>{let d=new Date(r.date);let date=d.toLocaleDateString(undefined,{day:'numeric',month:'short'})+' · '+d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});return '<div class="ride-row"><div><div class="ride-date">'+date+'</div><div class="ride-sub">'+fmtTime(r.duration)+' ride</div></div><div class="ride-right"><div class="ride-distance">'+r.distance.toFixed(2)+' mi</div><div class="ride-speed">Top '+r.top.toFixed(1)+' mph</div></div></div>'}).join('');
+ }
+ $('startBtn').addEventListener('click',start);$('stopBtn').addEventListener('click',finish);
+ $('clearHistory').addEventListener('click',()=>{if(!history.length)return;history=[];saveHistory();renderHistory();notify('Ride history cleared.')});
+ if(history.length)renderHistory();
+ updateUI();
+})();
+</script>
+</body>
+</html>
