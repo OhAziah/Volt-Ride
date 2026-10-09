@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#05080d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VOLT Ride">
+<title>VOLT — E-bike Ride</title>
+<style>
+:root{color-scheme:dark;--bg:#05080d;--panel:rgba(18,27,40,.64);--line:rgba(172,211,255,.14);--blue:#50c8ff;--blue2:#167cff;--muted:#8d9caf;--white:#f4f8ff;--page-glow:#102238;--secondary-text:#a4b4c7;--track:#ffffff12}
+html.light{color-scheme:light;--bg:#edf3f8;--panel:rgba(255,255,255,.88);--line:rgba(45,76,105,.16);--blue:#087ec5;--blue2:#126fe0;--muted:#607286;--white:#172536;--page-glow:#dcecf8;--secondary-text:#50647a;--track:rgba(32,57,80,.14)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:radial-gradient(ellipse at 50% 5%,var(--page-glow) 0%,#080e17 38%,var(--bg) 74%);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif}
+body{padding:env(safe-area-inset-top) 16px calc(20px + env(safe-area-inset-bottom));}
+.app{max-width:520px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;gap:17px}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 3px 2px}
+.brand{font-size:14px;letter-spacing:.23em;font-weight:800}.brand span{color:var(--blue)}
+.live{font-size:11px;color:#9aaabd;letter-spacing:.12em;display:flex;align-items:center;gap:7px}
+.dot{height:7px;width:7px;border-radius:50%;background:#536174;box-shadow:0 0 0 4px #53617422}.dot.on{background:#49e6ae;box-shadow:0 0 12px #49e6ae}
+.glass{background:linear-gradient(140deg,rgba(255,255,255,.075),rgba(255,255,255,.018) 45%),var(--panel);border:1px solid var(--line);box-shadow:0 16px 50px #0005,inset 0 1px 0 #ffffff12;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-radius:25px}
+.speed-card{padding:20px 16px 17px;position:relative;overflow:hidden;text-align:center}
+.speed-card:before{content:"";position:absolute;inset:-80px 10% auto;height:200px;background:radial-gradient(ellipse,#168dff20,transparent 70%);pointer-events:none}
+.eyebrow{font-size:10px;letter-spacing:.22em;color:#94a7bc;text-transform:uppercase}
+.gauge{width:min(84vw,350px);height:min(84vw,350px);max-width:350px;max-height:350px;margin:3px auto 0;position:relative;display:grid;place-items:center}
+.gauge svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.track{fill:none;stroke:#ffffff12;stroke-width:7;stroke-linecap:round}
+.progress{fill:none;stroke:url(#grad);stroke-width:7;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;filter:drop-shadow(0 0 8px #24aaff99);transition:stroke-dashoffset .18s ease}
+.gauge-tick{stroke:#8196ab;stroke-width:1.6;stroke-linecap:round;opacity:.8}
+.gauge-tick.major{stroke:#d2e7f8;stroke-width:2.3;opacity:1}
+.gauge-label{fill:#a7bbce;font-size:9px;font-weight:650;text-anchor:middle;dominant-baseline:middle}
+.gauge-label.major{fill:#e5f3ff;font-size:10px}
+.needle{transform-box:view-box;transform-origin:center;transform:rotate(-135deg);transition:transform .22s cubic-bezier(.2,.7,.2,1)}
+.needle-shaft{stroke:#f5fbff;stroke-width:3.2;stroke-linecap:round;filter:drop-shadow(0 0 5px #59caff99)}
+.needle-tail{stroke:#50c8ff;stroke-width:3;stroke-linecap:round}
+.needle-cap{fill:#eaf8ff;stroke:#50c8ff;stroke-width:3}
+.gauge-center{position:relative;z-index:1;transform:translateY(13px);pointer-events:none}
+.speed-number{font-size:clamp(66px,20vw,100px);line-height:.95;letter-spacing:-.075em;font-weight:650;font-variant-numeric:tabular-nums;text-shadow:0 0 35px #42baff18}
+.unit{font-size:11px;color:#a9c5dc;letter-spacing:.2em;margin-top:9px}
+.gps{margin-top:4px;color:var(--muted);font-size:11px;display:flex;justify-content:center;align-items:center;gap:7px}
+.gps:before{content:"";width:5px;height:5px;border-radius:50%;background:#6c7e92}
+.gps.good{color:#74e6bc}.gps.good:before{background:#49e6ae;box-shadow:0 0 9px #49e6ae}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.stat{padding:16px 17px;min-height:100px;display:flex;flex-direction:column;justify-content:space-between;gap:12px}
+.stat-top{display:flex;align-items:center;gap:8px;color:#a4b4c7;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.stat-icon{width:25px;height:25px;border-radius:8px;display:grid;place-items:center;background:#48bfff13;color:var(--blue);font-size:14px}
+.value{font-size:27px;letter-spacing:-.045em;font-weight:600;font-variant-numeric:tabular-nums}.value small{font-size:12px;letter-spacing:0;color:#a0b0c2;font-weight:500;margin-left:4px}
+.ride-time{padding:17px 19px;display:flex;align-items:center;justify-content:space-between}
+.time-label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#9eafc2}.time-value{font-size:25px;font-weight:600;letter-spacing:.03em;font-variant-numeric:tabular-nums;margin-top:4px}
+.time-symbol{font-size:22px;color:var(--blue);width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:#3abaff12;border:1px solid #68ceff17}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+button{font:inherit;cursor:pointer;border:0;min-height:59px;border-radius:18px;color:var(--white);font-size:15px;font-weight:650;transition:transform .15s,opacity .15s}
+button:active{transform:scale(.98)}
+.primary{background:linear-gradient(115deg,#68d7ff,#1788ff 80%);color:#03111e;box-shadow:0 8px 28px #168dff38}
+.secondary{background:rgba(255,255,255,.055);border:1px solid var(--line)}
+button:disabled{opacity:.35;cursor:not-allowed}
+.footnote{text-align:center;color:#627387;font-size:10px;line-height:1.5;padding:0 10px}
+.history{padding:19px;display:none}.history.show{display:block}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#b4c7d9;font-weight:700}
+.clear{font-size:11px;min-height:32px;padding:0 10px;border-radius:10px;color:#a4b8cb}
+.history-empty{font-size:13px;color:#718398;padding:10px 0 2px}
+.ride-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-top:1px solid #ffffff0c;gap:10px}
+.ride-date{font-size:13px;font-weight:600}.ride-sub{font-size:11px;color:#8193a8;margin-top:5px}
+.ride-right{text-align:right;white-space:nowrap}.ride-distance{font-size:16px;font-weight:650}.ride-speed{font-size:11px;color:#8ca0b5;margin-top:4px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#15283aee;border:1px solid #62cfff40;padding:12px 16px;border-radius:14px;font-size:12px;box-shadow:0 10px 35px #0008;transition:.25s;max-width:90vw;text-align:center;z-index:5}.toast.show{opacity:1;transform:translate(-50%,0)}
+html.light body{background:radial-gradient(ellipse at 50% 5%,#dcecf8 0%,#f4f7fa 42%,var(--bg) 78%)}
+html.light .glass{background:linear-gradient(140deg,rgba(255,255,255,.95),rgba(255,255,255,.72)),var(--panel);box-shadow:0 12px 32px rgba(31,61,88,.09),inset 0 1px 0 #ffffff}
+html.light .eyebrow,html.light .stat-top,html.light .time-label{color:#5c7085}
+html.light .unit{color:#526d83}
+html.light .gps{color:#53677b}
+html.light .gauge-label{fill:#53677b}
+html.light .gauge-label.major{fill:#263e54}
+html.light .gauge-tick{stroke:#71869b}
+html.light .gauge-tick.major{stroke:#3b536b}
+html.light .track{stroke:var(--track)}
+html.light .secondary{background:rgba(34,70,100,.06);border-color:var(--line);color:var(--white)}
+html.light .stat-icon,html.light .time-symbol{background:#1687d312;border-color:#1687d326}
+html.light .value small,html.light .ride-speed,html.light .ride-sub{color:#61758a}
+html.light .section-title{color:#425a70}
+html.light .history-empty{color:#607286}
+html.light .ride-row{border-top-color:rgba(32,57,80,.1)}
+html.light .footnote{color:#607286}
+html.light .toast{background:#fff;border-color:#b5d7eb;color:#172536;box-shadow:0 10px 35px #28476120}
+.header-tools{display:flex;align-items:center;justify-content:flex-end;gap:12px}
+.theme-toggle{min-height:32px;padding:0 11px;border-radius:11px;font-size:11px;letter-spacing:.02em;white-space:nowrap}
+@media(orientation:landscape) and (max-width:649px){.header-tools{gap:7px}.theme-toggle{padding:0 8px;font-size:10px;min-height:30px}}
+
+@media(min-width:430px) and (orientation:portrait){body{padding-left:22px;padding-right:22px}.app{gap:19px}}
+@media(orientation:landscape) and (min-width:650px){
+ body{padding-left:max(18px,env(safe-area-inset-left));padding-right:max(18px,env(safe-area-inset-right));padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+ .app{max-width:1120px;display:grid;grid-template-columns:minmax(320px,1fr) minmax(310px,.92fr);grid-template-rows:auto auto auto auto auto;align-items:start;gap:12px 18px;min-height:100dvh}
+ header{grid-column:1/-1;padding:7px 3px 0}
+ .speed-card{grid-column:1;grid-row:2 / span 4;padding:12px 12px 10px}
+ .eyebrow{margin-top:3px}
+ .gauge{width:min(48vw,76vh,430px);height:min(48vw,76vh,430px);max-width:430px;max-height:430px;margin:0 auto}
+ .gauge-center{transform:translateY(14px)}
+ .speed-number{font-size:clamp(72px,15vh,112px)}
+ .stats{grid-column:2;grid-row:2;gap:9px}
+ .stat{padding:12px 14px;min-height:82px;gap:8px}
+ .value{font-size:24px}
+ .ride-time{grid-column:2;grid-row:3;padding:12px 15px}
+ .time-value{font-size:21px}
+ .time-symbol{width:38px;height:38px}
+ .actions{grid-column:2;grid-row:4;gap:9px}
+ button{min-height:52px;border-radius:15px}
+ .history{grid-column:2;grid-row:5;padding:13px 15px}
+ .footnote{grid-column:1/-1;font-size:9px;padding:0 5px}
+}
+@media(orientation:landscape) and (max-width:649px){
+ body{padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right));padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+ .app{gap:10px}
+ header{padding-top:5px}
+ .speed-card{padding:10px 8px}
+ .gauge{width:min(86vw,78vh,360px);height:min(86vw,78vh,360px);max-width:360px;max-height:360px;margin:0 auto}
+ .speed-number{font-size:clamp(64px,16vh,96px)}
+ .stats{gap:7px}
+ .stat{padding:10px;min-height:78px}
+ .value{font-size:22px}
+ .ride-time{padding:12px 14px}
+ button{min-height:48px;font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="app">
+<header><div class="brand">VOLT<span> / </span>RIDE</div><div class="header-tools"><div class="live"><i class="dot" id="liveDot"></i><span id="liveText">GPS STANDBY</span></div><button class="secondary theme-toggle" id="themeToggle" type="button" aria-label="Switch to light mode">☼ Light mode</button></div></header>
+<section class="glass speed-card" aria-label="Current speed">
+<div class="eyebrow">Current speed</div>
+<div class="gauge" aria-label="Speedometer, 0 to 40 miles per hour">
+<svg viewBox="0 0 240 240" aria-hidden="true">
+ <defs><linearGradient id="grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#64e3ff"/><stop offset="100%" stop-color="#167bff"/></linearGradient></defs>
+ <path class="track" d="M 56.36 183.64 A 90 90 0 1 1 183.64 183.64" pathLength="100"/>
+ <path class="progress" id="progress" d="M 56.36 183.64 A 90 90 0 1 1 183.64 183.64" pathLength="100"/>
+ <g id="gaugeTicks"></g>
+ <g class="needle" id="needle"><line class="needle-tail" x1="120" y1="132" x2="120" y2="151"/><line class="needle-shaft" x1="120" y1="126" x2="120" y2="49"/><circle class="needle-cap" cx="120" cy="120" r="7"/></g>
+</svg>
+<div class="gauge-center"><div class="speed-number" id="speed">0.0</div><div class="unit">MPH</div></div>
+</div>
+<div class="gps" id="gpsStatus" role="status">Waiting for GPS permission</div>
+</section>
+<section class="stats">
+<div class="glass stat"><div class="stat-top"><span class="stat-icon">↗</span>Top speed</div><div class="value"><span id="topSpeed">0.0</span><small>mph</small></div></div>
+<div class="glass stat"><div class="stat-top"><span class="stat-icon">⌁</span>Average</div><div class="value"><span id="avgSpeed">0.0</span><small>mph</small></div></div>
+<div class="glass stat"><div class="stat-top"><span class="stat-icon">⌖</span>Distance</div><div class="value"><span id="distance">0.00</span><small>mi</small></div></div>
+<div class="glass stat"><div class="stat-top"><span class="stat-icon">◷</span>Ride time</div><div class="value"><span id="elapsed">00:00</span></div></div>
+</section>
+<section class="glass ride-time"><div><div class="time-label">Ride status</div><div class="time-value" id="rideState">Ready to roll</div></div><div class="time-symbol">ϟ</div></section>
+<div class="actions"><button class="primary" id="startBtn">▶ &nbsp; Start ride</button><button class="secondary" id="stopBtn" disabled>■ &nbsp; Finish ride</button></div>
+<section class="glass history" id="historyPanel"><div class="section-head"><div class="section-title">Ride history</div><button class="secondary clear" id="clearHistory">Clear</button></div><div id="historyList"></div></section>
+<div class="footnote">Speed uses filtered iPhone GPS readings and may vary with signal quality. For the best results, ride in open sky. Mount your phone securely and never interact with the screen while moving.</div>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script>
+(function(){
+ const $=id=>document.getElementById(id);
+ const MPS_TO_MPH=2.2369362921;
+ const THEME_KEY='voltRideTheme';
+ function applyTheme(theme){const light=theme==='light';document.documentElement.classList.toggle('light',light);$('themeToggle').textContent=light?'☾ Dark mode':'☼ Light mode';$('themeToggle').setAttribute('aria-label',light?'Switch to dark mode':'Switch to light mode');const meta=document.querySelector('meta[name=theme-color]');if(meta)meta.content=light?'#edf3f8':'#05080d';}
+ let savedTheme='dark';try{savedTheme=localStorage.getItem(THEME_KEY)==='light'?'light':'dark'}catch(e){}applyTheme(savedTheme);
+ $('themeToggle').addEventListener('click',()=>{const next=document.documentElement.classList.contains('light')?'dark':'light';applyTheme(next);try{localStorage.setItem(THEME_KEY,next)}catch(e){} });
+ const GAUGE_MAX=40;
+ // Build a real dial with evenly spaced tick marks and labelled 10 mph increments.
+ (function buildGauge(){
+  const group=$('gaugeTicks');
+  for(let mph=0;mph<=GAUGE_MAX;mph+=2){
+   const angle=(135+(mph/GAUGE_MAX)*270)*Math.PI/180;
+   const major=mph%10===0;
+   const inner=major?76:81, outer=major?88:86;
+   const x1=120+Math.cos(angle)*inner,y1=120+Math.sin(angle)*inner;
+   const x2=120+Math.cos(angle)*outer,y2=120+Math.sin(angle)*outer;
+   const tick=document.createElementNS('http://www.w3.org/2000/svg','line');
+   tick.setAttribute('x1',x1.toFixed(2));tick.setAttribute('y1',y1.toFixed(2));tick.setAttribute('x2',x2.toFixed(2));tick.setAttribute('y2',y2.toFixed(2));
+   tick.setAttribute('class','gauge-tick'+(major?' major':''));group.appendChild(tick);
+   if(major){
+    const label=document.createElementNS('http://www.w3.org/2000/svg','text');
+    label.setAttribute('x',(120+Math.cos(angle)*64).toFixed(2));label.setAttribute('y',(120+Math.sin(angle)*64).toFixed(2));
+    label.setAttribute('class','gauge-label major');label.textContent=String(mph);group.appendChild(label);
+   }
+  }
+ })();
+ let watchId=null, running=false, startedAt=0, elapsedBefore=0, timer=null, wakeLock=null;
+ let lastPoint=null, distanceM=0, topMph=0, speedSamples=[], currentMph=0, rawSpeedSamples=[], lastGpsAt=0, toastTimer=null, stationaryCount=0;
+ let history=[];
+ try{history=JSON.parse(localStorage.getItem('voltRideHistory')||'[]');if(!Array.isArray(history))history=[];}catch(e){history=[];}
+ const fmtTime=ms=>{let s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return h>0?String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'):String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')};
+ const elapsed=()=>elapsedBefore+(running?Date.now()-startedAt:0);
+ function notify(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),3200)}
+ function updateUI(){
+  $('speed').textContent=currentMph<1?currentMph.toFixed(1):currentMph.toFixed(1).replace(/\.0$/,'');
+  $('topSpeed').textContent=topMph.toFixed(1);
+  const avg=elapsed()>0?(distanceM/1609.344)/(elapsed()/3600000):0;
+  $('avgSpeed').textContent=(Number.isFinite(avg)?avg:0).toFixed(1);
+  $('distance').textContent=(distanceM/1609.344).toFixed(2);
+  $('elapsed').textContent=fmtTime(elapsed());
+  const fraction=Math.max(0,Math.min(currentMph/GAUGE_MAX,1));
+  $('progress').style.strokeDashoffset=100*(1-fraction);
+  $('needle').style.transform='rotate('+(-135+fraction*270)+'deg)';
+ }
+ function setGps(ok,msg){$('gpsStatus').textContent=msg;$('gpsStatus').classList.toggle('good',ok);$('liveDot').classList.toggle('on',ok);$('liveText').textContent=ok?'GPS ACTIVE':(running?'GPS SEARCHING':'GPS STANDBY')}
+ function haversine(a,b){const R=6371000,toRad=x=>x*Math.PI/180;let dLat=toRad(b.lat-a.lat),dLon=toRad(b.lon-a.lon);let q=Math.sin(dLat/2)**2+Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLon/2)**2;return 2*R*Math.atan2(Math.sqrt(q),Math.sqrt(1-q))}
+ function median(values){
+  const sorted=values.slice().sort((a,b)=>a-b);
+  if(!sorted.length)return 0;
+  const mid=Math.floor(sorted.length/2);
+  return sorted.length%2?sorted[mid]:(sorted[mid-1]+sorted[mid])/2;
+ }
+ function onPosition(pos){
+  const c=pos.coords, now=pos.timestamp||Date.now();
+  if(!running)return;
+  const accuracy=(Number.isFinite(c.accuracy)?c.accuracy:999);
+  // Allow moderately imprecise fixes; a 35 m cutoff was too strict for real-world iPhone GPS.
+  if(accuracy>60){setGps(false,'GPS accuracy low · ±'+Math.round(accuracy)+' m');return;}
+
+  const point={lat:c.latitude,lon:c.longitude,time:now,accuracy};
+  let derivedMph=null, segmentDistance=0, noiseFloor=2.5;
+  if(lastPoint){
+   const secs=(now-lastPoint.time)/1000;
+   const d=haversine(lastPoint,point);
+   // Avoid treating ordinary GPS position drift as movement when the phone is stopped.
+   noiseFloor=Math.max(2.5,Math.min(6,(accuracy+lastPoint.accuracy)*0.12));
+   if(secs>0 && secs<=8 && d<=Math.max(60,secs*35)){
+    if(d>noiseFloor){segmentDistance=d;if(secs>=0.35 && d/secs<=35)derivedMph=(d/secs)*MPS_TO_MPH;}
+   }
+  }
+
+  // Native GPS speed is the fastest and generally most stable source for a live speedometer.
+  // Derive speed from positions only when native speed is unavailable, or when movement
+  // across multiple metres makes an iOS zero reading implausible.
+  const gpsMph=(Number.isFinite(c.speed)&&c.speed>=0)?c.speed*MPS_TO_MPH:null;
+  const positionSuggestsMovement=segmentDistance>noiseFloor && derivedMph!==null && derivedMph>1.1;
+  let rawMph=(gpsMph!==null && gpsMph>0.6)?gpsMph:
+    (positionSuggestsMovement && (gpsMph===null || derivedMph>2.0)?derivedMph:(gpsMph??derivedMph));
+  if(rawMph===null || !Number.isFinite(rawMph))rawMph=0;
+  if(rawMph>60){setGps(false,'GPS speed spike ignored · recalibrating');return;}
+
+  // Stationary detection: require repeated low-speed fixes, then clamp GPS drift to zero.
+  const gpsSpeedAvailable=Number.isFinite(c.speed)&&c.speed>=0;
+  const gpsSuggestsMovement=gpsSpeedAvailable && c.speed*MPS_TO_MPH>1.2;
+  if(rawMph<1.15 && !positionSuggestsMovement && !gpsSuggestsMovement){
+   stationaryCount++;
+  }else{stationaryCount=0;}
+  const stationary=stationaryCount>=2;
+  if(stationary){
+   currentMph=0;
+   // Do not accumulate position jitter into the trip distance while stationary.
+  }else{
+   if(segmentDistance>0 && (positionSuggestsMovement||gpsSuggestsMovement))distanceM+=segmentDistance;
+   // Prioritise immediate response over a multi-fix median filter. Use very light
+   // smoothing on acceleration while still easing down to avoid a jittery gauge.
+   const alpha=rawMph>currentMph?0.94:0.58;
+   currentMph=currentMph===0?rawMph:(currentMph*(1-alpha)+rawMph*alpha);
+   if(currentMph<0.45)currentMph=0;
+  }
+  if(currentMph>topMph)topMph=currentMph;
+  lastPoint=point;lastGpsAt=Date.now();
+  speedSamples.push({mph:currentMph,time:now});if(speedSamples.length>300)speedSamples.shift();
+  setGps(true,stationary?'GPS lock · stopped · ±'+Math.round(accuracy)+' m':'GPS lock · ±'+Math.round(accuracy)+' m');
+  updateUI();
+ }
+ function onError(err){
+  let msg=err.code===1?'Location permission denied — allow access in iPhone Settings.':err.code===2?'GPS signal unavailable — move to an open area.':'GPS timed out — searching again.';
+  setGps(false,msg);notify(msg);
+ }
+ async function requestWakeLock(){
+  if(!('wakeLock' in navigator) || !running)return;
+  try{wakeLock=await navigator.wakeLock.request('screen');wakeLock.addEventListener('release',()=>{wakeLock=null;});}catch(e){wakeLock=null;}
+ }
+ async function releaseWakeLock(){
+  if(wakeLock){try{await wakeLock.release();}catch(e){}wakeLock=null;}
+ }
+ document.addEventListener('visibilitychange',()=>{if(running && document.visibilityState==='visible')requestWakeLock();});
+ function start(){
+  if(!navigator.geolocation){notify('This browser does not support GPS location.');return}
+  if(!window.isSecureContext && location.hostname!=='localhost' && location.protocol!=='file:'){notify('GPS requires HTTPS. Open this app using a secure website.');return}
+  running=true;startedAt=Date.now();lastPoint=null;currentMph=0;rawSpeedSamples=[];lastGpsAt=0;stationaryCount=0;
+  $('startBtn').disabled=true;$('stopBtn').disabled=false;$('rideState').textContent='Ride in progress';
+  setGps(false,'Requesting GPS permission…');updateUI();
+  requestWakeLock();
+  watchId=navigator.geolocation.watchPosition(onPosition,onError,{enableHighAccuracy:true,maximumAge:0,timeout:20000});
+  timer=setInterval(()=>{
+   if(running && lastGpsAt && Date.now()-lastGpsAt>3500){
+    // Show the stale signal warning promptly, but don't snap the gauge to zero
+    // after one delayed callback. Clear speed only after a longer GPS outage.
+    setGps(false,'GPS signal stale · waiting for update');
+    if(Date.now()-lastGpsAt>8000)currentMph=0;
+   }
+   updateUI();
+  },500);
+ }
+ function finish(){
+  if(!running)return;
+  running=false;elapsedBefore=elapsedBefore+Date.now()-startedAt;
+  if(watchId!==null)navigator.geolocation.clearWatch(watchId);watchId=null;clearInterval(timer);timer=null;releaseWakeLock();currentMph=0;lastPoint=null;rawSpeedSamples=[];lastGpsAt=0;stationaryCount=0;
+  $('startBtn').disabled=false;$('stopBtn').disabled=true;$('rideState').textContent='Ride complete';
+  setGps(false,'GPS paused');updateUI();
+  const duration=elapsedBefore;
+  if(distanceM>0.01||duration>10000){
+   const item={date:new Date().toISOString(),distance:distanceM/1609.344,top:topMph,avg:duration>0?(distanceM/1609.344)/(duration/3600000):0,duration};
+   history.unshift(item);history=history.slice(0,30);saveHistory();renderHistory();notify('Ride saved to your history.');
+  }else notify('Ride ended. Not enough data to save a trip.');
+  elapsedBefore=0;distanceM=0;topMph=0;speedSamples=[];updateUI();
+ }
+ function saveHistory(){try{localStorage.setItem('voltRideHistory',JSON.stringify(history))}catch(e){notify('Unable to save ride history on this device.')}}
+ function renderHistory(){
+  const panel=$('historyPanel'),list=$('historyList');panel.classList.add('show');
+  if(!history.length){list.innerHTML='<div class="history-empty">Your completed rides will appear here.</div>';return}
+  list.innerHTML=history.map((r,i)=>{let d=new Date(r.date);let date=d.toLocaleDateString(undefined,{day:'numeric',month:'short'})+' · '+d.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});return '<div class="ride-row"><div><div class="ride-date">'+date+'</div><div class="ride-sub">'+fmtTime(r.duration)+' ride</div></div><div class="ride-right"><div class="ride-distance">'+r.distance.toFixed(2)+' mi</div><div class="ride-speed">Top '+r.top.toFixed(1)+' mph</div></div></div>'}).join('');
+ }
+ $('startBtn').addEventListener('click',start);$('stopBtn').addEventListener('click',finish);
+ $('clearHistory').addEventListener('click',()=>{if(!history.length)return;history=[];saveHistory();renderHistory();notify('Ride history cleared.')});
+ if(history.length)renderHistory();
+ updateUI();
+})();
+</script>
+</body>
+</html>
