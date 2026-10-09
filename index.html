@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="VOLT Ride">
-<title>VOLT — E-bike Ride</title>
+<title>VOLT — E-Bike Ride</title>
 <style>
 :root{color-scheme:dark;--bg:#05080d;--panel:rgba(18,27,40,.64);--line:rgba(172,211,255,.14);--blue:#50c8ff;--blue2:#167cff;--muted:#8d9caf;--white:#f4f8ff;--page-glow:#102238;--secondary-text:#a4b4c7;--track:#ffffff12}
 html.light{color-scheme:light;--bg:#edf3f8;--panel:rgba(255,255,255,.88);--line:rgba(45,76,105,.16);--blue:#087ec5;--blue2:#126fe0;--muted:#607286;--white:#172536;--page-glow:#dcecf8;--secondary-text:#50647a;--track:rgba(32,57,80,.14)}
@@ -147,10 +147,10 @@ html.light .toast{background:#fff;border-color:#b5d7eb;color:#172536;box-shadow:
 <div class="glass stat"><div class="stat-top"><span class="stat-icon">⌖</span>Distance</div><div class="value"><span id="distance">0.00</span><small>mi</small></div></div>
 <div class="glass stat"><div class="stat-top"><span class="stat-icon">◷</span>Ride time</div><div class="value"><span id="elapsed">00:00</span></div></div>
 </section>
-<section class="glass ride-time"><div><div class="time-label">Ride status</div><div class="time-value" id="rideState">Ready to roll</div></div><div class="time-symbol">ϟ</div></section>
-<div class="actions"><button class="primary" id="startBtn">▶ &nbsp; Start ride</button><button class="secondary" id="stopBtn" disabled>■ &nbsp; Finish ride</button></div>
+<section class="glass ride-time"><div><div class="time-label">Ride status</div><div class="time-value" id="rideState">Ready</div></div><div class="time-symbol">ϟ</div></section>
+<div class="actions"><button class="primary" id="startBtn">▶ &nbsp; Start</button><button class="secondary" id="stopBtn" disabled>■ &nbsp; Finish</button></div>
 <section class="glass history" id="historyPanel"><div class="section-head"><div class="section-title">Ride history</div><button class="secondary clear" id="clearHistory">Clear</button></div><div id="historyList"></div></section>
-<div class="footnote">Speed uses filtered iPhone GPS readings and may vary with signal quality. For the best results, ride in open sky. Mount your phone securely and never interact with the screen while moving.</div>
+<div class="footnote">Developed by <strong>Charlie Tuttle</strong></div>
 </main>
 <div class="toast" id="toast" role="status"></div>
 <script>
